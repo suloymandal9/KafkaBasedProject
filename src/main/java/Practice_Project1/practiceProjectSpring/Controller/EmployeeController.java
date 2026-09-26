@@ -17,7 +17,7 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    @GetMapping("/department/{departmentId}")
+    @GetMapping("/getEmployeeByDepartmentId/{departmentId}")
     public ResponseEntity<List<?>> getEmployeesByDepartment(@PathVariable int departmentId){
         return ResponseEntity.ok(employeeService.getEmployeeByDepartment(departmentId));
     }
@@ -27,6 +27,11 @@ public class EmployeeController {
                                             @RequestBody Employee employee){
 
         return ResponseEntity.ok(employeeService.createEmployee(departmentId,employee));
+    }
+
+    @DeleteMapping("/department/{departmentId}")
+    public ResponseEntity<?> deleteEmployee(@PathVariable int departmentId){
+        return ResponseEntity.ok(employeeService.deleteEmployee(departmentId));
     }
 
 

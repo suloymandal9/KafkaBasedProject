@@ -5,6 +5,7 @@ import Practice_Project1.practiceProjectSpring.DTO.EmployeeResponse;
 import Practice_Project1.practiceProjectSpring.Entity.Department;
 import Practice_Project1.practiceProjectSpring.Entity.Employee;
 import Practice_Project1.practiceProjectSpring.Exception.DepartmentNotFoundException;
+import Practice_Project1.practiceProjectSpring.Exception.EmployeeNotFoundException;
 import Practice_Project1.practiceProjectSpring.Repository.DepartmentRepository;
 import Practice_Project1.practiceProjectSpring.Repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class EmployeeService {
     public List<EmployeeResponse> getEmployeeByDepartment(int department_id){
         Department department =departmentRepository.findById(department_id)
                 .orElseThrow(()->new DepartmentNotFoundException(
-                        "department not fnd"
+                        "department not found"
                 ));
 
         return department.getEmployeeList().stream()
@@ -50,5 +51,15 @@ public class EmployeeService {
                 savedEmployee.getSalary(),
                 savedEmployee.getDepartment().getName()
         );
+    }
+
+    public String deleteEmployee(int employeeId){
+
+
+        Employee deleteEmployee =employeeRepository.findById(employeeId)
+                .orElseThrow(()-> new EmployeeNotFoundException("not found employee"));
+        employeeRepository.deleteById(deleteEmployee.getEmployee_id());
+
+        return "deleted";
     }
 }
