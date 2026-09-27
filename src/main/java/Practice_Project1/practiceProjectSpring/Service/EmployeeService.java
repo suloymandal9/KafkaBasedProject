@@ -26,8 +26,9 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
 
+
     public List<EmployeeResponse> getEmployeeByDepartment(int department_id){
-        try {
+
             Department department = departmentRepository.findById(department_id)
                     .orElseThrow(() -> new DepartmentNotFoundException(
                             "department not found"
@@ -43,41 +44,9 @@ public class EmployeeService {
 
                     ))
                     .toList();
-        }
-        catch (DepartmentNotFoundException e){
-//            throw e;
 
-            ErrorResponse deprtmentNotFound =new ErrorResponse(HttpStatus.NOT_FOUND.value(),
-                    e.getMessage(),
-                    LocalDateTime.now());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND,deprtmentNotFound);
-        }
+
     }
-
-
-
-
-
-//    public List<EmployeeResponse> getEmployeeByDepartment(int department_id){
-//
-//            Department department = departmentRepository.findById(department_id)
-//                    .orElseThrow(() -> new DepartmentNotFoundException(
-//                            "department not found"
-//                    ));
-//
-//
-//            return department.getEmployeeList().stream()
-//                    .map(employee -> new EmployeeResponse(
-//                            employee.getEmployee_id(),
-//                            employee.getName(),
-//                            employee.getSalary(),
-//                            employee.getDepartment().getName()
-//
-//                    ))
-//                    .toList();
-//
-//
-//    }
 
     public EmployeeResponse createEmployee(int departmentId, Employee employee){
         Department department =departmentRepository.findById(departmentId)
@@ -106,12 +75,3 @@ public class EmployeeService {
 }
 
 
-//if we use exceptionhandler then dont need to do try catch
-@ExceptionHandler(DepartmentNotFoundException.class)
-public ResponseEntity<?> handleDepartmentNotFoundException( DepartmentNotFoundException e){
-    ErrorResponse response = new ErrorResponse(HttpStatus.NOT_FOUND.value(),
-            e.getMessage(),
-            LocalDateTime.now());
-
-    return ResponseEntity.status(HttpStatus.NOT_FOUND,response);
-}
