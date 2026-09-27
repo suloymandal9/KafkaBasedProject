@@ -2,6 +2,7 @@ package Practice_Project1.practiceProjectSpring.Service;
 
 
 import Practice_Project1.practiceProjectSpring.DTO.EmployeeResponse;
+import Practice_Project1.practiceProjectSpring.DTO.ErrorResponse;
 import Practice_Project1.practiceProjectSpring.Entity.Department;
 import Practice_Project1.practiceProjectSpring.Entity.Employee;
 import Practice_Project1.practiceProjectSpring.Exception.DepartmentNotFoundException;
@@ -9,8 +10,12 @@ import Practice_Project1.practiceProjectSpring.Exception.EmployeeNotFoundExcepti
 import Practice_Project1.practiceProjectSpring.Repository.DepartmentRepository;
 import Practice_Project1.practiceProjectSpring.Repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.LocalDateTime;
 import java.util.List;
 //import java.util.stream.Collectors;
 
@@ -22,21 +27,57 @@ public class EmployeeService {
     private final DepartmentRepository departmentRepository;
 
     public List<EmployeeResponse> getEmployeeByDepartment(int department_id){
-        Department department =departmentRepository.findById(department_id)
-                .orElseThrow(()->new DepartmentNotFoundException(
-                        "department not found"
-                ));
+        try {
+            Department department = departmentRepository.findById(department_id)
+                    .orElseThrow(() -> new DepartmentNotFoundException(
+                            "department not found"
+                    ));
 
-        return department.getEmployeeList().stream()
-                .map(employee-> new EmployeeResponse(
-                        employee.getEmployee_id(),
-                        employee.getName(),
-                        employee.getSalary(),
-                        employee.getDepartment().getName()
 
-                ))
-                .toList();
+            return department.getEmployeeList().stream()
+                    .map(employee -> new EmployeeResponse(
+                            employee.getEmployee_id(),
+                            employee.getName(),
+                            employee.getSalary(),
+                            employee.getDepartment().getName()
+
+                    ))
+                    .toList();
+        }
+        catch (DepartmentNotFoundException e){
+//            throw e;
+
+            ErrorResponse deprtmentNotFound =new ErrorResponse(HttpStatus.NOT_FOUND.value(),
+                    e.getMessage(),
+                    LocalDateTime.now());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND,deprtmentNotFound);
+        }
     }
+
+
+
+
+
+//    public List<EmployeeResponse> getEmployeeByDepartment(int department_id){
+//
+//            Department department = departmentRepository.findById(department_id)
+//                    .orElseThrow(() -> new DepartmentNotFoundException(
+//                            "department not found"
+//                    ));
+//
+//
+//            return department.getEmployeeList().stream()
+//                    .map(employee -> new EmployeeResponse(
+//                            employee.getEmployee_id(),
+//                            employee.getName(),
+//                            employee.getSalary(),
+//                            employee.getDepartment().getName()
+//
+//                    ))
+//                    .toList();
+//
+//
+//    }
 
     public EmployeeResponse createEmployee(int departmentId, Employee employee){
         Department department =departmentRepository.findById(departmentId)
@@ -62,4 +103,15 @@ public class EmployeeService {
 
         return "deleted";
     }
+}
+
+
+//if we use exceptionhandler then dont need to do try catch
+@ExceptionHandler(DepartmentNotFoundException.class)
+public ResponseEntity<?> handleDepartmentNotFoundException( DepartmentNotFoundException e){
+    ErrorResponse response = new ErrorResponse(HttpStatus.NOT_FOUND.value(),
+            e.getMessage(),
+            LocalDateTime.now());
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND,response);
 }
