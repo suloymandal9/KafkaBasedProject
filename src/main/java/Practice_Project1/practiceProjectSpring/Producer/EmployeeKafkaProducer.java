@@ -3,6 +3,7 @@
 //public class EmployeeKafkaProducer {
 //}
 
+//Step 1
 
 package Practice_Project1.practiceProjectSpring.Producer;
 
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 public class EmployeeKafkaProducer {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
-
     private static final String TOPIC = "employee-events";
 
     public void sendMessage(String message) {
